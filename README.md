@@ -89,5 +89,5 @@ Principais fluxos:
 ---
 
 ## :handshake: **Créditos**
-Projeto desenvolvido para a disciplina de Arquitetura de Sistemas .NET – Hackaton Fase 5 – Pós Teleperformance | FIAP | 2025.
+Projeto desenvolvido para a disciplina de Arquitetura de Sistemas .NET – Hackaton Fase 5 | FIAP | 2025.
 
