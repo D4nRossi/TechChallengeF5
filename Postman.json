@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "FastTechFoods",
+    "_postman_id": "9fd50f40-2f82-4a3c-b8d9-6f7f6e3be1f8",
+    "description": "Coleção de testes para FastTech Foods (Auth, Menu, Pedido, Cliente)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login Cliente",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:5100/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5100",
+          "path": ["api", "auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"cliente@teste.com\",\n  \"password\": \"Senha123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth - Login Gerente",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:5100/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5100",
+          "path": ["api", "auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"gerente@teste.com\",\n  \"password\": \"Senha123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Cliente - Cadastro",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:5103/api/clientes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5103",
+          "path": ["api", "clientes"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Cliente Teste\",\n  \"email\": \"cliente@teste.com\",\n  \"cpf\": \"12345678900\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Menu - Cadastro Item (Gerente)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_gerente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5101/api/menu",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5101",
+          "path": ["api", "menu"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Pizza Margherita\",\n  \"description\": \"Pizza clássica de muçarela, tomate e manjericão\",\n  \"price\": 45.00,\n  \"isAvailable\": true,\n  \"category\": \"Lanches\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Menu - Buscar Itens (Cliente)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_cliente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5101/api/menu?name=Pizza",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5101",
+          "path": ["api", "menu"],
+          "query": [{ "key": "name", "value": "Pizza" }]
+        }
+      }
+    },
+    {
+      "name": "Pedido - Criar Pedido (Cliente)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_cliente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5102/api/pedido",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5102",
+          "path": ["api", "pedido"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"formaEntrega\": \"Balcão\",\n  \"itens\": [\n    {\n      \"menuItemId\": \"{{menuItemId}}\",\n      \"nome\": \"Pizza Margherita\",\n      \"preco\": 45.00,\n      \"quantidade\": 1\n    }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "Pedido - Listar Pendentes (Gerente)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_gerente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5102/api/pedido/pendentes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5102",
+          "path": ["api", "pedido", "pendentes"]
+        }
+      }
+    },
+    {
+      "name": "Pedido - Aprovar Pedido (Gerente)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_gerente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5102/api/pedido/{{pedidoId}}/aprovar",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5102",
+          "path": ["api", "pedido", "{{pedidoId}}", "aprovar"]
+        }
+      }
+    },
+    {
+      "name": "Pedido - Rejeitar Pedido (Gerente)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_gerente}}" }
+        ],
+        "url": {
+          "raw": "http://localhost:5102/api/pedido/{{pedidoId}}/rejeitar",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5102",
+          "path": ["api", "pedido", "{{pedidoId}}", "rejeitar"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "jwt_gerente", "value": "" },
+    { "key": "jwt_cliente", "value": "" },
+    { "key": "clienteId", "value": "" },
+    { "key": "menuItemId", "value": "" },
+    { "key": "pedidoId", "value": "" }
+  ]
+}

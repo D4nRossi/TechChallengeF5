@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    ports:
+      - "5100:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  menu-service:
+    build:
+      context: ./menu-service
+    ports:
+      - "5101:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  pedido-service:
+    build:
+      context: ./pedido-service
+    ports:
+      - "5102:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  cliente-service:
+    build:
+      context: ./cliente-service
+    ports:
+      - "5103:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  gateway:
+    build:
+      context: ./FastTechFoods.Gateway
+    ports:
+      - "5105:8080"
+    depends_on:
+      - auth-service
+      - menu-service
+      - pedido-service
+      - cliente-service
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Senha123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "11433:1433"
+
+  pedido-consumer:
+    build:
+      context: ./PedidoConsumer
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - pedido-service
+      - menu-service
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana-data:
