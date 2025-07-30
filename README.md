@@ -1,110 +1,93 @@
+# FastTechFoods - Hackaton Fase 5
 
-# FastTechFoods - Ambiente de Microsserviços
-
-Este projeto utiliza Docker Compose para orquestrar os principais serviços do MVP FastTechFoods.  
-A arquitetura é baseada em microsserviços: autenticação, cardápio, pedidos, gateway, mensageria (RabbitMQ) e banco de dados (SQL Server).
-
----
-
-## 🏗️ Serviços Disponíveis
-
-| Serviço               | Porta Host    | URL de Acesso              | Descrição                    |
-|-----------------------|---------------|----------------------------|------------------------------|
-| auth-service          | 5045          | http://localhost:5045      | Serviço de autenticação      |
-| menu-service          | 5091          | http://localhost:5091      | Gestão de cardápio           |
-| pedido-service        | 5140          | http://localhost:5140      | Gestão de pedidos            |
-| FastTechFoods.Gateway | 5080          | http://localhost:5080      | API Gateway (YARP)           |
-| rabbitmq              | 5672, 15672   | http://localhost:15672     | Mensageria                   |
-| sqlserver             | 1433          | N/A                        | Banco de dados SQL Server    |
+Plataforma moderna para gestão de pedidos, cardápio, autenticação de funcionários/clientes e mensageria via RabbitMQ.  
+Arquitetura baseada em microsserviços com observabilidade total (Grafana, Prometheus), CI/CD com GitHub Actions, orquestração via Docker Compose.
 
 ---
 
-## 🚀 Como subir o ambiente
+## :rocket: **Arquitetura**
 
-### 1. Clone o repositório e acesse a pasta do projeto
+- **auth-service**: Autenticação e controle de acesso de funcionários e clientes (Identity, JWT)
+- **menu-service**: Cadastro e edição de cardápio (restrito a gerente)
+- **pedido-service**: Fluxo de pedidos (criar, aprovar, rejeitar, cancelar)
+- **cliente-service**: Cadastro e gestão do cliente
+- **gateway**: API Gateway para roteamento entre serviços
+- **rabbitmq**: Mensageria entre serviços (publicação e consumo de eventos de pedido)
+- **sqlserver**: Banco de dados relacional principal
+- **prometheus/grafana**: Observabilidade e métricas em tempo real
 
-```bash
-git clone <seu-repositorio>
-cd <pasta-do-projeto>
+---
+
+## :whale: **Como rodar**
+
+Pré-requisitos:
+- Docker e Docker Compose instalados
+
+### **1. Clone o repositório**
+
+```sh
+git clone https://github.com/seuusuario/fasttechfoods.git
+cd fasttechfoods
 ```
 
-### 2. Suba todos os containers com Docker Compose
+### **2. Suba todos os serviços**
 
-```bash
+```sh
 docker compose up -d --build
 ```
 
-> O parâmetro `--build` garante que todas as imagens serão reconstruídas caso haja alterações no código.
+### **3. Acesse os serviços**
 
-### 3. Aguarde alguns segundos e acesse os serviços pelos endereços acima.
+- **Auth**: http://localhost:5100
+- **Menu**: http://localhost:5101
+- **Pedido**: http://localhost:5102
+- **Cliente**: http://localhost:5103
+- **Gateway**: http://localhost:5105
+- **RabbitMQ UI**: http://localhost:15673 (guest/guest)
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3002 (admin/admin)
+- **SQL Server**: localhost, porta 11433 (usuario: sa / senha: Senha123!)
 
----
+### **4. Endpoints principais**
 
-## 🐰 RabbitMQ
-
-- Interface de gerenciamento: [http://localhost:15672](http://localhost:15672)
-- Usuário: `guest`
-- Senha: `guest`
-
----
-
-## 🛢️ SQL Server
-
-- Host: `localhost,1433`
-- Usuário: `sa`
-- Senha: `Senha123!`
-- Database: conforme especificado em cada serviço
-
----
-
-## 🔗 Exemplos de requisição
-
-- Autenticação:
-
-  ```http
-  POST http://localhost:5045/api/auth/login
-  ```
-
-- Cardápio:
-
-  ```http
-  GET http://localhost:5091/api/menu
-  ```
-
-- Pedidos:
-
-  ```http
-  POST http://localhost:5140/api/pedido
-  ```
+Veja a collection Postman anexada ou acesse via Swagger dos serviços.  
+Principais fluxos:
+- Login/Cadastro (Cliente e Funcionário)
+- Cadastro/Edição de itens do cardápio
+- Fazer pedido, aprovar/rejeitar, cancelar pedido (com justificativa)
+- Mensageria via RabbitMQ (pedido criado = mensagem publicada)
+- Observabilidade em Grafana/Prometheus
 
 ---
 
-## 🧹 Comandos úteis
+## :wrench: **Observabilidade**
 
-### Parar todos os containers
-
-```bash
-docker compose down
-```
-
-### Visualizar logs de um serviço
-
-```bash
-docker compose logs <serviço>
-```
-
-### Rebuild de um serviço específico
-
-```bash
-docker compose build <serviço>
-```
+- **/metrics**: Todos os serviços expõem métricas para Prometheus.
+- **Grafana**: Dashboard pronto para monitorar requisições, status e latência por serviço.
 
 ---
 
-## 📝 Observações
+## :repeat: **Pipeline CI/CD**
 
-- O Gateway (porta 5080) faz o roteamento para os demais serviços via YARP.
-- Os serviços podem demorar alguns instantes para iniciar na primeira vez, especialmente o SQL Server.
-- Caso precise resetar o banco, exclua o volume associado ao container `sqlserver`.
+- CI/CD configurado no GitHub Actions para build/test dos serviços a cada push/pull request.
 
+---
+
+## :scroll: **Como testar**
+
+- Use o arquivo de collection do Postman disponível no repositório (`FastTechFoods.postman_collection.json`)
+- Crie usuários, faça login, realize pedidos e veja as métricas subirem no Grafana!
+
+---
+
+## :exclamation: **Notas finais**
+
+- O projeto **NÃO utiliza Kubernetes** no MVP, mas está pronto para evolução futura.
+- Zabbix não foi incluído (só Grafana/Prometheus para observabilidade).
+- O código está comentado, modular e separado por contexto.
+
+---
+
+## :handshake: **Créditos**
+Projeto desenvolvido para a disciplina de Arquitetura de Sistemas .NET – Hackaton Fase 5 – Pós Teleperformance | FIAP | 2025.
 
